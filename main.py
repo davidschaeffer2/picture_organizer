@@ -10,6 +10,7 @@ def main():
     """
     Runs the script.
     """
+    file_blacklist = ['desktop.ini', '.dropbox']
     __USAGE__ = f'Usage: main.py <dir_to_sort> <dir_to_move_sorted_pics>'
     if len(sys.argv) != 3:
         sys.exit(f'Missing directory:\n{__USAGE__}')
@@ -19,7 +20,7 @@ def main():
         try:
             with os.scandir(dir_to_sort) as files:
                 for entry in files:
-                    if entry.is_file():
+                    if entry.is_file() and entry.name not in file_blacklist:
                         sort_file(entry, dir_to_move_sorted_pics)
         except FileNotFoundError as e:
             sys.exit(f'Could not find the directory.\n{e}')
@@ -56,9 +57,14 @@ def sort_file(picture: os.DirEntry, dir_to_move_to: str):
     :param dir_to_move_to: The destination directory.
     :return: None
     """
-    date_of_picture = picture.name.split(' ')[0]
+    date_of_picture = picture.name.split('_')[0]
     try:
-        year, month, day = date_of_picture.split('-')
+        year = date_of_picture[:4]  # [:N] = items beginning to N-1
+        print(f'Year: {year}')
+        month = date_of_picture[4:6]
+        print(f'Month: {month}')
+        day = date_of_picture[6:]
+        print(f'Day: {day}')
     except ValueError as e:
         sys.stderr.write(f'Error when getting date of file:\n{e}\n'
                          f'File: {picture.path}\n')

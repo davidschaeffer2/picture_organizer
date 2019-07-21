@@ -60,20 +60,21 @@ def sort_file(picture: os.DirEntry, dir_to_move_to: str):
     date_of_picture = picture.name.split('_')[0]
     try:
         year = date_of_picture[:4]  # [:N] = items beginning to N-1
-        print(f'Year: {year}')
+        #print(f'Year: {year}')
         month = date_of_picture[4:6]
-        print(f'Month: {month}')
+        #print(f'Month: {month}')
         day = date_of_picture[6:]
-        print(f'Day: {day}')
+        #print(f'Day: {day}')
+        date_obj = datetime.date(int(year), int(month), int(day))
+        picture_destination = f'{dir_to_move_to}\\{year}\\{date_obj.strftime("%B")}'
+        if (ensure_year_dir_exists(dir_to_move_to, year) and
+                ensure_month_dir_exists(dir_to_move_to, year, date_obj.strftime("%B"))):
+            shutil.move(picture.path, picture_destination)
     except ValueError as e:
         sys.stderr.write(f'Error when getting date of file:\n{e}\n'
                          f'File: {picture.path}\n')
         return  # Just skip to next file.
-    date_obj = datetime.date(int(year), int(month), int(day))
-    picture_destination = f'{dir_to_move_to}\\{year}\\{date_obj.strftime("%B")}'
-    if (ensure_year_dir_exists(dir_to_move_to, year) and
-            ensure_month_dir_exists(dir_to_move_to, year, date_obj.strftime("%B"))):
-        shutil.move(picture.path, picture_destination)
+
     return
 
 
